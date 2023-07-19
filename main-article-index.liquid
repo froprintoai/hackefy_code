@@ -1,0 +1,68 @@
+{{ 'section-main-article-index.css' | asset_url | stylesheet_tag }}
+{{ 'component-article-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
+{% liquid
+    assign article_handle_prefix = "特集記事ブログ/"
+ %}
+
+<div class="main-article-index section-{{ section.id }}-padding">
+    <div class="blog-articles page-width">
+        <div class="blog-articles__article article blog-full-width first-blog">
+          {%- render 'article-card',
+            article: article,
+            media_height: "large",
+            media_aspect_ratio: article.image.aspect_ratio,
+            show_image: true,
+            show_date: false,
+            show_author: false,
+            show_excerpt: true
+          -%}
+        </div>
+    </div>
+    <div class="article-index-list page-width">
+        <div class="article-index-list-mokuji">目次</div>
+        <ul>
+        {%- for subarticle_handle in article.metafields.custom.article_handles.value -%}
+            {%- liquid 
+                assign subarticle_full_handle = subarticle_handle | prepend: article_handle_prefix
+                assign subarticle = articles[subarticle_full_handle]
+            -%}
+            <li class="article-index-list-item">
+                <a href="{{ subarticle.url }}" class="link article-item-link">
+                    {{ subarticle.title }}
+                </a>
+            </li>
+        {%- endfor -%}
+        </ul>
+    </div>
+</div>
+<div class="article-list page-width">
+    {%- for subarticle_handle in article.metafields.custom.article_handles.value -%}
+        {%- liquid 
+            assign subarticle_full_handle = subarticle_handle | prepend: article_handle_prefix
+            assign subarticle = articles[subarticle_full_handle]
+        -%}
+        <div class="blog-articles">
+            <div class="blog-articles__article article blog-full-width first-blog">
+            {%- render 'article-card',
+                article: subarticle,
+                media_height: "large",
+                media_aspect_ratio: article.image.aspect_ratio,
+                show_image: true,
+                show_date: true,
+                show_author: false,
+                show_excerpt: true
+            -%}
+            </div>
+        </div>
+
+    {%- endfor -%}
+</div>
+{% schema %}
+{
+  "name": "t:sections.main-article-index.name",
+  "tag": "section",
+  "class": "section"
+}
+{% endschema %}
